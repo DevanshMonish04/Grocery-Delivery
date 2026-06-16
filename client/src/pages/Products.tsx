@@ -20,7 +20,7 @@ import FilterPanel from "../components/FilterPanel";
 import api from "../config/api";
 import toast from "react-hot-toast";
 
-const PRODUCTS_PER_PAGE = 8;
+
 
 const Products = () => {
   const [searchParams, setSearchParams] =
@@ -111,11 +111,11 @@ const Products = () => {
       (c) => c.slug === category
     );
 
-  const hasFilters =
+  const hasFilters =Boolean(
     category ||
     organic ||
     minPrice ||
-    maxPrice;
+    maxPrice);
 
   useEffect(() => {
     fetchProducts();
@@ -156,7 +156,7 @@ const Products = () => {
               <FilterPanel
                 categories={categoriesData}
                 category={category}
-                organic={organic}
+               
                 minPrice={minPrice}
                 maxPrice={maxPrice}
                 updateFilter={updateFilter}
@@ -329,7 +329,7 @@ const Products = () => {
               <FilterPanel
                 categories={categoriesData}
                 category={category}
-                organic={organic}
+               
                 minPrice={minPrice}
                 maxPrice={maxPrice}
                 updateFilter={updateFilter}

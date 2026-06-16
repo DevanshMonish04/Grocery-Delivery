@@ -3,7 +3,7 @@ import React from "react"
  import { heroSectionData } from "../assets/assets"
 import { Link } from "react-router-dom"
 import { BikeIcon, Loader2Icon, LockIcon, MailIcon, UserIcon } from "lucide-react"
-import { useAuth } from "../context/authContext"
+import { useAuth } from "../context/AuthContext"
 import toast from "react-hot-toast"
 
 

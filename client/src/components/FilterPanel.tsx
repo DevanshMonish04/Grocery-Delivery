@@ -1,3 +1,12 @@
+interface FilterPanelProps {
+  categories: any[];
+  category: string; 
+  minPrice: string;
+  maxPrice: string;
+  updateFilter: (key: string, value: string) => void;
+  clearFilter: () => void;
+  hasFilters: boolean;
+}
 const FilterPanel = ({
   categories,
   category,
@@ -6,7 +15,7 @@ const FilterPanel = ({
   updateFilter,
   clearFilter,
   hasFilters,
-}) => {
+}: FilterPanelProps)  => {
   const categoriesWithAll = [
     { slug: "", name: "All Categories" },
     ...categories,
