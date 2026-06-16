@@ -5,7 +5,7 @@ import { assignDeliveryPartners, createDeliveryPartners, getAdminStats, getDeliv
 
 const adminRouter=express.Router()
 
-adminRouter.get('/status',auth,admin,getAdminStats)
+adminRouter.get('/stats',auth,admin,getAdminStats)
 adminRouter.get('/delivery-partners',auth,admin,getDeliveryPartners)
 adminRouter.post('/delivery-partners',auth,admin,createDeliveryPartners)
 adminRouter.put('/delivery-partners/:id',auth,admin,updateDeliveryPartners)

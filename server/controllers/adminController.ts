@@ -30,11 +30,12 @@ export const getAdminStats=async (req:Request, res:Response)=>{
 
 //getting delivery partner list for admin
 
-export const getDeliveryPartners=async (req:Request,res:Response)=>{
-    const partner=await prisma.deliveryPartner.findMany(
-        {orderBy:{createdAt:"desc"}}
-    )
-    res.json({partner})
+export const getDeliveryPartners = async (req: Request, res: Response) => {
+    const partners = await prisma.deliveryPartner.findMany({
+        orderBy: { createdAt: "desc" }
+    });
+
+    res.json({ partners });
 }
 
 //create delivery partner profile
@@ -48,9 +49,15 @@ export const createDeliveryPartners=async (req:Request,res:Response)=>{
     }
     const hashedPassword=await bcrypt.hash(password,10)
 
-    const partner=await prisma.deliveryPartner.create({
-        data:{name,email:email.toLowerCase(),password:hashedPassword,phone:vehicleType}
-    })
+const partner = await prisma.deliveryPartner.create({
+    data: {
+        name,
+        email: email.toLowerCase(),
+        password: hashedPassword,
+        phone,
+        vehicleType
+    }
+})
 
     res.status(201).json({partner})
 }
@@ -64,7 +71,7 @@ export const updateDeliveryPartners=async (req:Request,res:Response)=>{
     if(name) data.name=name;
     if(phone) data.phone=phone;
     if(vehicleType) data.vehicleType=vehicleType;
-    if(isActive) data.isActive=isActive;
+    data.isActive=isActive;
 
     try{
         const partner=await prisma.deliveryPartner.update({

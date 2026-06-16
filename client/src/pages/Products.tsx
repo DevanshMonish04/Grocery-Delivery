@@ -10,7 +10,6 @@ import {
 
 import {
   categoriesData,
-  dummyProducts,
 } from "../assets/assets";
 
 import type { Product } from "../types";
@@ -18,6 +17,8 @@ import type { Product } from "../types";
 import ProductCard from "../components/ProductCart";
 import Loading from "../components/Loading";
 import FilterPanel from "../components/FilterPanel";
+import api from "../config/api";
+import toast from "react-hot-toast";
 
 const PRODUCTS_PER_PAGE = 8;
 
@@ -58,85 +59,29 @@ const Products = () => {
   const maxPrice =
     searchParams.get("maxPrice") || "";
 
-  const fetchProducts = async () => {
-    setLoading(true);
+  const fetchProducts=async ()=>{
+    setLoading(true)
+    try{
+      const params=new URLSearchParams()
+      if(category) params.set('category',category)
+        if(organic) params.set('organic',organic)
+          if(sort) params.set('sort',sort)
+            if(minPrice) params.set('minPrice',minPrice)
+              if(maxPrice) params.set('maxPrice',maxPrice)
 
-    let filteredProducts = [...dummyProducts];
+                params.set("page",String(page))
+                params.set("limit","12")
 
-    /* Category Filter */
-    if (category) {
-      filteredProducts =
-        filteredProducts.filter(
-          (p) => p.category === category
-        );
+                const {data}=await api.get(`/products?${params.toString()}`);
+              setProducts(data.products)
+              setTotalPages(data.pages)
+
+    }catch(error:any){
+      toast.error(error?.response?.data?.message || error?.message);
+    }finally{
+      setLoading(false)
     }
-
-    /* Organic Filter */
-    if (organic === "true") {
-      filteredProducts =
-        filteredProducts.filter(
-          (p) => p.organic
-        );
-    }
-
-    /* Min Price */
-    if (minPrice) {
-      filteredProducts =
-        filteredProducts.filter(
-          (p) =>
-            p.price >= Number(minPrice)
-        );
-    }
-
-    /* Max Price */
-    if (maxPrice) {
-      filteredProducts =
-        filteredProducts.filter(
-          (p) =>
-            p.price <= Number(maxPrice)
-        );
-    }
-
-    /* Sorting */
-    if (sort === "price_asc") {
-      filteredProducts.sort(
-        (a, b) => a.price - b.price
-      );
-    }
-
-    if (sort === "price_desc") {
-      filteredProducts.sort(
-        (a, b) => b.price - a.price
-      );
-    }
-
-    if (sort === "name") {
-      filteredProducts.sort((a, b) =>
-        a.name.localeCompare(b.name)
-      );
-    }
-
-    /* Pagination */
-    setTotalPages(
-      Math.ceil(
-        filteredProducts.length /
-          PRODUCTS_PER_PAGE
-      )
-    );
-
-    const start =
-      (page - 1) * PRODUCTS_PER_PAGE;
-
-    const end =
-      start + PRODUCTS_PER_PAGE;
-
-    filteredProducts =
-      filteredProducts.slice(start, end);
-
-    setProducts(filteredProducts);
-
-    setLoading(false);
-  };
+  }
 
   const updateFilter = (
     key: string,
@@ -315,7 +260,7 @@ const Products = () => {
                   (product) =>
                     product.stock > 0 && (
                       <ProductCard
-                        key={product._id}
+                        key={product.id}
                         product={product}
                       />
                     )
@@ -395,7 +340,7 @@ const Products = () => {
           </div>
         </>
       )}
-    </div>
+    </div>                                             
   );
 };
 

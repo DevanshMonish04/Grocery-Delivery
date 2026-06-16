@@ -52,7 +52,7 @@ export const getMyDeliveries=async (req:Request,res:Response)=>{
         where.status={in:["Assigned","Packed","Out for Delivery"]}
     }
     else if(status==="completed"){
-        where.status={in:["Delivered","Cancled"]}
+        where.status={in:["Delivered","Cancelled"]}
 
     }
     const orders=await prisma.order.findMany({

@@ -26,7 +26,7 @@ export const getProducts=async(req:Request,res:Response)=>{
     const where:any={};
     if(category && category !=="all") where.category=category as string;
 
-    if(search) where.name={constains:search as string,mode:"insensitive"};
+    if(search) where.name={contains:search as string,mode:"insensitive"};
 
     if(minPrice || MaxPrice){
         where.price={};
@@ -82,8 +82,11 @@ export const updateProduct=async (req:Request,res:Response)=>{
 //DELETE/api/delete/:id
 
 export const deleteProduct=async (req:Request,res:Response)=>{
-    await prisma.product.delete({where:{id:req.params.id as string}})
-    res.json({message:"Deleted"})
+    await prisma.product.update({
+        where:{id:req.params.id as string},
+    data:{stock:Number(0)}
+})
+    res.json({message:"Product Updated"})
 }
 
 

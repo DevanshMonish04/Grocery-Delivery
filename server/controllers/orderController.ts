@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { prisma } from "../config/prisma.js";
 import { inngest } from "../inngest/index.js";
+import Stripe from "stripe";
 
 
 //create order 
@@ -31,8 +32,9 @@ export const createOrder=async(req:Request,res:Response)=>{
         }
     }
     const orderItems=items.map((item:any)=>{
-        const dbProduct =productMap[item.product];
-        if(!dbProduct) throw new Error(`Product ${item.product} not found`);
+        const dbProduct = productMap[item.productId];
+       
+       if(!dbProduct) throw new Error(`Product ${item.productId} not found`);
         return {
             product:dbProduct.id,
             name:dbProduct.name,
@@ -63,7 +65,30 @@ export const createOrder=async(req:Request,res:Response)=>{
     })
 
     if(paymentMethod==="card"){
-        // stripe payment link
+        const stripe=new Stripe(process.env.STRIPE_SECRET_KEY as string)
+
+
+        //create session
+
+       const session = await stripe.checkout.sessions.create({
+        success_url: `${req.headers.origin}/orders?clearCart=true`,
+        cancel_url: `${req.headers.origin}/checkout`,
+         line_items: [
+        {
+         price_data: {
+            currency:"usd",
+            product_data:{
+                name:"Payment Groceries"
+            },
+            unit_amount:Math.round(total * 100)
+         },
+        quantity: 1,
+    },
+  ],
+  mode: 'payment',
+  metadata:{orderId:order.id}
+});
+return res.json({url:session.url})
     }
     res.json({order})
 
@@ -114,7 +139,7 @@ export const getOrder=async(req:Request,res:Response)=>{
     const order=await prisma.order.findFirst({
         where:{id:req.params.id as string,userId:req.user!.id},
         include:{deliveryPartner:{select:{name:true,phone:true,
-            avtar:true,vehicleType:true
+            avatar:true,vehicleType:true
         }}}
     })
     if(!order){
@@ -154,7 +179,7 @@ export const getAllOrders=async(req:Request,res:Response)=>{
         include:{
             user:{select:{name:true,email:true}},
             deliveryPartner:{select:{name:true,phone:true,
-            emamil:true
+            email:true
         }}},
         orderBy:{createdAt:"desc"}
     })
